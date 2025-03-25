@@ -1,0 +1,24 @@
+name: Get semver diff
+
+on:
+  release:
+    types:
+      - created
+  push:
+    tags:
+      - v*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: semver-diff
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run semver-diff
+        id: semver-diff
+        uses: tj-actions/semver-diff@v3
+      - name: Show release type
+        run: |
+          echo "release_type: ${{ steps.semver-diff.outputs.release_type }}"
+          echo "new_version: ${{ steps.semver-diff.outputs.new_version }}"
+          echo "old_version: ${{ steps.semver-diff.outputs.old_version }}"
