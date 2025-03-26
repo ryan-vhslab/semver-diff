@@ -27,32 +27,30 @@ jobs:
           echo "old_version: ${{ steps.semver-diff.outputs.old_version }}"
           
           case ${{ steps.semver-diff.outputs.release_type }} in
-          major | minor)
-            echo "update_all=true" >> $GITHUB_OUTPUT
-            echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
-            echo "update_all"
-            exit 0
-            ;;
-          patch | prerelease | build)
-            if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
+            major | minor)
+              echo "update_all=true" >> $GITHUB_OUTPUT
+              echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+              echo "update_all=major | minor"
+              exit 0 ;;
+            patch | prerelease | build)
+              if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
+                  echo "update_all=false" >> $GITHUB_OUTPUT
+                  echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+                  echo "update_all=patch | prerelease | build"
+                  exit 0
+              else
                 echo "update_all=false" >> $GITHUB_OUTPUT
-                echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
-                echo "update_all=build"
-                exit 0
-            else
-              echo "update_all=false" >> $GITHUB_OUTPUT
-              echo "update_all=same version as old"
-            fi
-            ;;
-          *)
-            # No release_type is returned if it is not annotated as `v*`
-            echo "update_all=true" >> $GITHUB_OUTPUT
-            echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+                echo "update_all=new_update"
+              fi ;;
+          esac
 
-            echo "No release_type is returned if it is not annotated as 'v*'"
-            exit 0
-            ;;
-          esac  
+      - name: Failed to detect release_type
+        if: failure() && steps.check-release-type.outcome == 'failure'
+        run: |
+          # Occurs when version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'
+          echo "update_all=true" >> $GITHUB_OUTPUT
+          echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+          exit 0
 
       - name: Compare Versions
         id: compare-versions
