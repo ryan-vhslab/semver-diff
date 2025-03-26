@@ -36,5 +36,6 @@ jobs:
             fi
           done
           echo "------------------------------"
-          echo "component_with_changes: $component_with_changes"
+          echo "component_with_changes: ${component_with_changes}"
+          echo "git_diff: ${git_diff}"
 
