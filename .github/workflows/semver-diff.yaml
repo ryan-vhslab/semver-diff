@@ -37,16 +37,19 @@ jobs:
             if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
                 echo "update_all=false" >> $GITHUB_OUTPUT
                 echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
-                echo "update_all=false"
+                echo "update_all=build"
                 exit 0
             else
               echo "update_all=false" >> $GITHUB_OUTPUT
+              echo "update_all=same version as old"
             fi
             ;;
           *)
             # No release_type is returned if it is not annotated as `v*`
             echo "update_all=true" >> $GITHUB_OUTPUT
             echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+
+            echo "No release_type is returned if it is not annotated as 'v*'"
             exit 0
             ;;
           esac  
