@@ -26,6 +26,8 @@ jobs:
 
           git_diff=`git diff --name-only ${{ steps.semver-diff.outputs.new_version }} ${{ steps.semver-diff.outputs.old_version }}`
           readarray -t component <<< $(echo -e "${{ inputs.components }}")
+
+          readarray -t component <<< $(echo -e "${components}")
           for path in "${component[@]}"; do
             # echo "${path}"
             if [[ -n "$path" ]] && [[ $git_diff =~ "${path}" ]]; then
