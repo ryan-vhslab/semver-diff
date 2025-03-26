@@ -35,7 +35,7 @@ jobs:
               if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
                   # no changes detected 
                   echo "release_type=${{ steps.semver-diff.outputs.release_type }}"
-                  echo "updated_components=''" >> $GITHUB_OUTPUT
+                  echo "updated_components=NONE" >> $GITHUB_OUTPUT
                   exit 0
               else
                 echo "compare_versions=true" >> $GITHUB_OUTPUT
@@ -61,18 +61,19 @@ jobs:
           git_diff=`git diff --name-only ${{ steps.semver-diff.outputs.new_version }} ${{ steps.semver-diff.outputs.old_version }}`
           readarray -t component <<< $(echo -e "${{ inputs.components }}")
 
+          updated_components="NONE" # set default value
           readarray -t component <<< $(echo -e "${components}")
           for path in "${component[@]}"; do
             # echo "${path}"
             if [[ -n "$path" ]] && [[ $git_diff =~ "${path}" ]]; then
               echo "updated: $path" 
-              component_with_changes+="${path}"$'\n'
+              updated_components+="${path}"$'\n'
             else
               echo "not updated: $path" 
             fi
           done
 
           echo "------------------------------"
-          echo "component_with_changes: ${component_with_changes}"
+          echo "updated_components: ${updated_components}"
           echo "git_diff: ${git_diff}"
 
