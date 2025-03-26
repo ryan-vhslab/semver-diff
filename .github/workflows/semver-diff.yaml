@@ -25,18 +25,18 @@ jobs:
           # Version outputs: v0.0.1
           echo "new_version: ${{ steps.semver-diff.outputs.new_version }}"
           echo "old_version: ${{ steps.semver-diff.outputs.old_version }}"
-          
+
           case ${{ steps.semver-diff.outputs.release_type }} in
             major | minor)
+              echo "release_type=${{ steps.semver-diff.outputs.release_type }}"
               echo "update_all=true" >> $GITHUB_OUTPUT
               echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
-              echo "update_all=major | minor"
               exit 0 ;;
             patch | prerelease | build)
               if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
+                  echo "release_type=${{ steps.semver-diff.outputs.release_type }}"
                   echo "update_all=false" >> $GITHUB_OUTPUT
                   echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
-                  echo "update_all=patch | prerelease | build"
                   exit 0
               else
                 echo "update_all=false" >> $GITHUB_OUTPUT
