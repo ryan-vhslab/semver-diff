@@ -1,11 +1,13 @@
 name: Get semver diff
 on:
   release:
-    types:
-      - created
-  push:
-    tags:
-      - v*
+    types: [published]
+  # release:
+  #   types:
+  #     - created
+  # push:
+  #   tags:
+  #     - v*
 jobs:
   test:
     runs-on: ubuntu-latest
