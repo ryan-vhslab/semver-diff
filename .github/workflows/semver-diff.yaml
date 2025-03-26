@@ -46,7 +46,7 @@ jobs:
           esac
 
       - name: Failed to detect release_type
-        if: failure() && steps.check-release-type.outcome == 'failure'
+        if: failure() || steps.check-release-type.outcome != 'success'
         run: |
           # Occurs when version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'
           echo "update_all=true" >> $GITHUB_OUTPUT
