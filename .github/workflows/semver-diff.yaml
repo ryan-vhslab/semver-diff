@@ -17,30 +17,28 @@ jobs:
       - name: Run semver-diff
         id: semver-diff
         uses: tj-actions/semver-diff@v3
-      - name: Show release type
+      - name: Check release type
         id: check-release-type
         run: |
           # Release type: major || minor || patch || prerelease || build 
           echo "release_type: ${{ steps.semver-diff.outputs.release_type }}"
-          # Version outputs: v0.0.1
+          # Version outputs format: v0.0.1
           echo "new_version: ${{ steps.semver-diff.outputs.new_version }}"
           echo "old_version: ${{ steps.semver-diff.outputs.old_version }}"
 
           case ${{ steps.semver-diff.outputs.release_type }} in
             major | minor)
               echo "release_type=${{ steps.semver-diff.outputs.release_type }}"
-              echo "update_all=true" >> $GITHUB_OUTPUT
-              echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+              echo "updated_components='ALL'" >> $GITHUB_OUTPUT
               exit 0 ;;
             patch | prerelease | build)
               if [ "${{ steps.semver-diff.outputs.new_version }}" == "${{ steps.semver-diff.outputs.old_version }}" ]; then
+                  # no changes detected 
                   echo "release_type=${{ steps.semver-diff.outputs.release_type }}"
-                  echo "update_all=false" >> $GITHUB_OUTPUT
-                  echo "updated_components=${{ inputs.components }}" >> $GITHUB_OUTPUT
+                  echo "updated_components=''" >> $GITHUB_OUTPUT
                   exit 0
               else
-                echo "update_all=false" >> $GITHUB_OUTPUT
-                echo "update_all=new_update"
+                echo "compare_versions=true" >> $GITHUB_OUTPUT
               fi ;;
           esac
         continue-on-error: true
@@ -55,7 +53,7 @@ jobs:
 
       - name: Compare Versions
         id: compare-versions
-        if: steps.check-release-type.outputs.update_all == 'false'
+        if: steps.check-release-type.outputs.compare_versions == 'true'
         run: | 
           components="service/api/picks-api
           service/api/picks-pricing-api"
@@ -73,6 +71,7 @@ jobs:
               echo "not updated: $path" 
             fi
           done
+
           echo "------------------------------"
           echo "component_with_changes: ${component_with_changes}"
           echo "git_diff: ${git_diff}"
