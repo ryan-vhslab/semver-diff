@@ -20,3 +20,21 @@ jobs:
           echo "release_type: ${{ steps.semver-diff.outputs.release_type }}"
           echo "new_version: ${{ steps.semver-diff.outputs.new_version }}"
           echo "old_version: ${{ steps.semver-diff.outputs.old_version }}"
+          
+          components="service/api/picks-api
+          service/api/picks-pricing-api"
+
+          git_diff=`git diff --name-only ${{ steps.semver-diff.outputs.new_version }} ${{ steps.semver-diff.outputs.old_version }}`
+          readarray -t component <<< $(echo -e "${{ inputs.components }}")
+          for path in "${component[@]}"; do
+            # echo "${path}"
+            if [[ -n "$path" ]] && [[ $git_diff =~ "${path}" ]]; then
+              echo "updated: $path" 
+              component_with_changes+="${path}"$'\n'
+            else
+              echo "not updated: $path" 
+            fi
+          done
+          echo "------------------------------"
+          echo "component_with_changes: $component_with_changes"
+
