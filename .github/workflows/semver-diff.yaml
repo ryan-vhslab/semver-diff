@@ -19,7 +19,6 @@ jobs:
         uses: tj-actions/semver-diff@v3
       - name: Show release type
         id: check-release-type
-        continue-on-error: true
         run: |
           # Release type: major || minor || patch || prerelease || build 
           echo "release_type: ${{ steps.semver-diff.outputs.release_type }}"
@@ -44,6 +43,7 @@ jobs:
                 echo "update_all=new_update"
               fi ;;
           esac
+        continue-on-error: true
 
       - name: Failed to detect release_type
         if: failure() || steps.check-release-type.outcome != 'success'
