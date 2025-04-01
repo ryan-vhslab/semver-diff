@@ -1,0 +1,39 @@
+name: 'Matrix test'
+on:
+  workflow_dispatch:
+
+jobs: 
+  
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      updated_components: ${{ steps.check.outputs.updated_components }}
+    steps:
+      - name: Check 
+        id: check
+        run: |
+          updated_components='service/api/picks-api service/api/picks-pricing-api'
+          echo "updated_components=$updated_components" >> $GITHUB_OUTPUT
+
+  conditional-matrix:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Conditional Matrix - ${{ matrix.component }}
+    # if: contains(needs.check.outputs.updated_components, matrix.component) 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - microservice: picks-api
+            component: 'service/api/picks-api'
+          - microservice: picks-pricing-api
+            component: 'service/api/picks-pricing-api'
+          - microservice: temporal-service
+            component: 'orchestration/temporal'
+          - microservice: graphql-subscriptions
+            component: 'service/federation/zedx-graphql-subscriptions'
+    steps:
+      - name: Updated
+        run: |
+          echo "Component: ${{ matrix.component }}" 
+          echo "Is updated:${{ contains(needs.check.outputs.updated_components, matrix.component)  }}"
