@@ -80,6 +80,6 @@ jobs:
       - name: Show outputs
         id: show-output
         run: |
-          echo "show updated_components=${steps.compare-versions.outputs.updated_components}" 
+          echo "show updated_components=${{steps.compare-versions.outputs.updated_components}}" 
 
 
