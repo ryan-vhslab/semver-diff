@@ -76,4 +76,10 @@ jobs:
           echo "------------------------------"
           echo "updated_components: ${updated_components}"
           echo "git_diff: ${git_diff}"
+          echo "updated_components=${updated_components}" >> $GITHUB_OUTPUT
+      - name: Show outputs
+        id: show-output
+        run: |
+          echo "show updated_components=${steps.compare-versions.outputs.updated_components}" 
+
 
