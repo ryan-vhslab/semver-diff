@@ -67,7 +67,7 @@ jobs:
             # echo "${path}"
             if [[ -n "$path" ]] && [[ $git_diff =~ "${path}" ]]; then
               echo "updated: $path" 
-              updated_components+=" ${path}"
+              updated_components+=" ${path} "
             else
               echo "not updated: $path" 
             fi
